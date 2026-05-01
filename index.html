@@ -260,11 +260,11 @@ body{
 <script>
 // ── Google Sheets URLs ──────────────────────
 const SHEETS = {
-  about:   'YOUR_ABOUT_SHEET_CSV_URL',
-  works:   'YOUR_WORKS_SHEET_CSV_URL',
-  podcast: 'YOUR_PODCAST_SHEET_CSV_URL',
-  music:   'YOUR_MUSIC_SHEET_CSV_URL',
-  contact: 'YOUR_CONTACT_SHEET_CSV_URL',
+  about:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=1400416584&single=true&output=csv',
+  works:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=2026004957&single=true&output=csv',
+  podcast: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=266309937&single=true&output=csv',
+  music:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=402396762&single=true&output=csv',
+  contact: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=789321669&single=true&output=csv',
 };
 
 const HH = 44, FH = 44;
@@ -422,18 +422,42 @@ function buildWorkWins(works){
     const el = document.createElement('div');
     el.className = 'win';
     el.id = id;
+    // コンテンツエリア: YouTube埋め込み or 画像プレースホルダー
+    const mediaHTML = w.embed_url
+      ? `<div style="position:relative;width:100%;padding-top:56.25%;background:#000;">
+           <iframe src="${w.embed_url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+         </div>`
+      : `<div class="img-ph">Image</div>`;
+
+    // リンクボタン: Spotifyはロゴ付き、それ以外は「Open →」
+    let linkHTML = '';
+    if(w.url){
+      const isSpotify = w.url.includes('spotify.com');
+      const isYouTube = w.url.includes('youtube.com') || w.url.includes('youtu.be');
+      if(isSpotify){
+        linkHTML = `<a href="${w.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          Spotify
+        </a>`;
+      } else if(isYouTube && !w.embed_url){
+        linkHTML = `<a href="${w.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">YouTube →</a>`;
+      } else if(!w.embed_url){
+        linkHTML = `<a href="${w.url}" target="_blank" style="font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;display:inline-block;margin-top:8px;">Open →</a>`;
+      }
+    }
+
     el.innerHTML = `
       <div class="win-accent"></div>
       <div class="win-bar">
         <span class="win-label">${w.category||'Work'} / ${w.date||''}</span>
         <button class="win-close" onclick="closeWin('${id}')">×</button>
       </div>
-      <div class="win-body">
-        <div class="img-ph">Image</div>
+      ${mediaHTML}
+      <div class="win-body" style="padding:12px 14px 14px;">
         <div class="work-cat">${w.category||''}</div>
         <div class="work-title">${w.title||''}</div>
         <div class="work-date">${w.date||''}</div>
-        ${w.url ? `<button class="work-link" onclick="window.open('${w.url}','_blank')">Open →</button>` : ''}
+        ${linkHTML}
       </div>`;
     container.appendChild(el);
 
@@ -516,10 +540,11 @@ async function loadPodcast(){
     {number:'#009',title:'ループと感情',duration:'27:55'},
   ];
   document.getElementById('podcast-list').innerHTML = eps.map((ep,i)=>`
-    <div class="row ${i===0?'on':''}" onclick="pickEp(this,'${ep.title}','${ep.duration}')">
+    <div class="row ${i===0?'on':''}" onclick="pickEp(this,'${ep.title}','${ep.duration}','${ep.spotify_url||''}')">
       <span class="row-n">${ep.number||'#'+String(i+1).padStart(3,'0')}</span>
       <span class="row-t">${ep.title}</span>
       <span class="row-s">${ep.duration}</span>
+      ${ep.spotify_url ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>` : ''}
     </div>`).join('');
   if(eps.length>0){
     document.getElementById('podcast-player').style.display='flex';
@@ -528,12 +553,13 @@ async function loadPodcast(){
   }
 }
 
-function pickEp(row,title,dur){
+function pickEp(row,title,dur,spotifyUrl){
   row.closest('.win-body').querySelectorAll('.row').forEach(r=>r.classList.remove('on'));
   row.classList.add('on');
   document.getElementById('p-now').textContent=title;
   document.getElementById('p-dur').textContent=dur;
   document.getElementById('p-fill').style.width='0%';
+  if(spotifyUrl) window.open(spotifyUrl,'_blank');
 }
 
 // ── MUSIC ────────────────────────────────────
@@ -547,11 +573,12 @@ async function loadMusic(){
     {number:'05',title:'Hollow',genre:'Ambient',duration:'4:02'},
   ];
   document.getElementById('music-list').innerHTML = tracks.map((t,i)=>`
-    <div class="row ${i===0?'on':''}" onclick="pickTrack(this,'${t.title}')">
+    <div class="row ${i===0?'on':''}" onclick="pickTrack(this,'${t.title}','${t.spotify_url||''}')">
       <span class="row-n">${t.number||String(i+1).padStart(2,'0')}</span>
       <span class="row-t">${t.title}</span>
       <span class="row-g">${t.genre||''}</span>
       <span class="row-s">${t.duration||''}</span>
+      ${t.spotify_url ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>` : ''}
     </div>`).join('');
   if(tracks.length>0){
     document.getElementById('music-player').style.display='flex';
@@ -559,11 +586,12 @@ async function loadMusic(){
   }
 }
 
-function pickTrack(row,title){
+function pickTrack(row,title,spotifyUrl){
   row.closest('.win-body').querySelectorAll('.row').forEach(r=>r.classList.remove('on'));
   row.classList.add('on');
   document.getElementById('m-now').textContent=title;
   document.getElementById('m-fill').style.width='0%';
+  if(spotifyUrl) window.open(spotifyUrl,'_blank');
 }
 
 // ── WORKS ────────────────────────────────────
