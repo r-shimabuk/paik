@@ -180,39 +180,6 @@ body{
   </div>
 </div>
 
-<!-- PODCAST -->
-<div class="win" id="w-podcast">
-  <div class="win-accent"></div>
-  <div class="win-bar">
-    <span class="win-label">Podcast</span>
-    <button class="win-close" onclick="closeWin('w-podcast')">×</button>
-  </div>
-  <div class="win-body">
-    <div id="podcast-list"><div class="loading">Loading...</div></div>
-    <div class="player" id="podcast-player" style="display:none">
-      <button class="pbtn" onclick="togglePlay(this,'p-fill')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-      <div class="ptrack"><div class="pnow" id="p-now"></div><div class="pbar"><div class="pfill" id="p-fill" style="width:0%"></div></div></div>
-      <span class="pdur" id="p-dur"></span>
-    </div>
-  </div>
-</div>
-
-<!-- MUSIC -->
-<div class="win" id="w-music">
-  <div class="win-accent"></div>
-  <div class="win-bar">
-    <span class="win-label">Music</span>
-    <button class="win-close" onclick="closeWin('w-music')">×</button>
-  </div>
-  <div class="win-body">
-    <div id="music-list"><div class="loading">Loading...</div></div>
-    <div class="player" id="music-player" style="display:none">
-      <button class="pbtn" onclick="togglePlay(this,'m-fill')"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-      <div class="ptrack"><div class="pnow" id="m-now"></div><div class="pbar"><div class="pfill" id="m-fill" style="width:0%"></div></div></div>
-    </div>
-  </div>
-</div>
-
 <!-- WORKS -->
 <div id="works-container"></div>
 
@@ -337,17 +304,7 @@ function doShuffle(){
 
 // ── LAYOUT ──
 function layoutAll(){
-  const vw=window.innerWidth, vh=window.innerHeight, avail=vh-HH-FH;
-  const wM=Math.round(vw*0.48);
-  const col0=Math.round(vw*0.03), col1=Math.round(vw*0.38);
-  const fixed=[
-    {id:'w-podcast',w:wM,x:col0,y:Math.round(HH+avail*0.04)},
-    {id:'w-music',  w:wM,x:col1,y:Math.round(HH+avail*0.06)},
-  ];
-  fixed.forEach((f,i)=>{
-    placeWin(f.id,f.x,f.y,f.w,0);
-    document.getElementById(f.id).style.zIndex=10+i;
-  });
+  // podcast/musicウィンドウは削除済み。worksのみ使用。
 }
 
 // ── WORKS ──
@@ -636,7 +593,7 @@ window.addEventListener('load', async ()=>{
 
   // データ取得（失敗しても画面は消える）
   try{
-    await Promise.all([loadAbout(),loadContact(),loadPodcast(),loadMusic()]);
+    await Promise.all([loadAbout(),loadContact()]);
     await loadWorks();
   }catch(e){
     console.warn('load error',e);
