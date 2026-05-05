@@ -30,16 +30,25 @@ body{
   position:fixed;inset:0;z-index:99999;
   background:var(--accent);
   display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;
   transition:opacity .6s ease;
 }
 #loading-screen.hide{opacity:0;pointer-events:none;}
 
-/* 黒背景・白コーン → screen合成でオレンジ背景に白く乗る */
 #loading-video{
-  width:min(320px, 60vw);
+  width:min(96px, 18vw);
   height:auto;
   display:block;
   mix-blend-mode:screen;
+}
+#loading-text{
+  font-family:var(--en);
+  font-size:min(96px, 18vw); /* 動画の横幅と同じ */
+  font-weight:300;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:#fff;
+  line-height:1;
 }
 
 /* HEADER */
@@ -104,7 +113,7 @@ body{
   display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;
 }
 .win-close:hover{background:var(--accent);color:#fff;}
-.win-body{padding:22px 24px;}
+.win-body{padding:10px 12px;}
 
 /* ABOUT MODAL */
 .modal-overlay{position:fixed;inset:0;z-index:9500;background:rgba(26,26,26,.5);display:none;align-items:center;justify-content:center;}
@@ -146,9 +155,9 @@ body{
 
 /* work card */
 .img-ph{width:100%;aspect-ratio:3/2;background:#D8D8D8;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
-.work-cat{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;margin-top:10px;}
-.work-title{font-family:var(--jp);font-size:15px;font-weight:300;line-height:1.5;margin-bottom:5px;color:var(--blue);}
-.work-date{font-family:var(--en);font-size:8px;color:var(--green);margin-bottom:10px;}
+.work-cat{font-family:var(--en);font-size:7px;font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:2px;margin-top:6px;}
+.work-title{font-family:var(--jp);font-size:11px;font-weight:300;line-height:1.3;margin-bottom:3px;color:var(--blue);}
+.work-date{font-family:var(--en);font-size:7px;color:var(--green);margin-bottom:6px;}
 
 .loading{font-family:var(--en);font-size:8px;color:var(--muted);letter-spacing:.12em;padding:14px 0;text-align:center;}
 </style>
@@ -160,6 +169,7 @@ body{
   <video id="loading-video" autoplay muted playsinline loop>
     <source src="paik-08_1.mp4" type="video/mp4">
   </video>
+  <div id="loading-text">Loading...</div>
 </div>
 
 <header class="site-header">
@@ -393,7 +403,7 @@ function buildWorkWins(works){
         <button class="win-close" onclick="closeWin('${id}')">×</button>
       </div>
       ${mediaHTML}
-      <div class="win-body" style="padding:0 14px 14px;">
+      <div class="win-body" style="padding:6px 12px 10px;">
         <div class="work-cat">${w.category||''}</div>
         <div class="work-title">${w.title||''}</div>
         <div class="work-date">${w.date||''}</div>
