@@ -8,9 +8,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#F6F7F8;--win:#EDEDEC;--bar:#E2E2E0;
+  --bg:#F6F7F8;--win:#EDEDEC;
   --ink:#1A1A1A;--muted:#888;--dim:rgba(26,26,26,.11);
-  --accent:#E83D22;
+  --accent:#FF4C00;
+  --blue:#0000CC;
+  --green:#1ED760;
   --en:'Barlow Condensed','Arial Narrow',sans-serif;
   --jp:'Noto Sans JP',sans-serif;
   --hh:44px;--fh:44px;
@@ -21,6 +23,24 @@ body{
   background-image:radial-gradient(circle,rgba(30,215,96,.35) 1.4px,transparent 1.4px);
   background-size:22px 22px;
   font-family:var(--en);color:var(--ink);user-select:none;
+}
+
+/* ── LOADING SCREEN ── */
+#loading-screen{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
+  transition:opacity .5s ease;
+}
+#loading-screen.hide{opacity:0;pointer-events:none;}
+#loading-screen .ls-title{
+  font-family:var(--jp);font-size:18px;font-weight:300;
+  letter-spacing:.2em;color:#fff;
+}
+#loading-screen .ls-sub{
+  font-family:var(--en);font-size:11px;font-weight:300;
+  letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.7);
 }
 
 /* HEADER */
@@ -54,8 +74,18 @@ body{
   background:var(--win);
   border:.5px solid var(--accent);
   z-index:10;
+  cursor:grab; /* ウィンドウ全体でドラッグ可 */
 }
+.win:active{cursor:grabbing;}
 .win.closed{display:none;}
+.win.blue-win{border-color:var(--blue);}
+.win.blue-win .win-bar{background:var(--blue);}
+.win.blue-win .win-accent{background:var(--blue);}
+.win.blue-win .win-close{color:var(--blue);border-color:var(--blue);}
+.win.blue-win .win-close:hover{background:var(--blue);}
+.win.blue-win .work-cat{color:var(--blue);}
+.win.blue-win .row{border-bottom-color:var(--blue);}
+.win.blue-win .row.on .row-t{border-bottom-color:var(--blue);}
 
 .win-accent{height:2px;background:var(--accent);}
 
@@ -68,29 +98,14 @@ body{
   -webkit-user-select:none;user-select:none;
 }
 .win-bar:active{cursor:grabbing;}
-
-.win-label{
-  font-family:var(--en);font-size:8px;font-weight:300;
-  letter-spacing:.22em;color:#fff;text-transform:uppercase;
-  pointer-events:none;
-}
-
+.win-label{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:#fff;text-transform:uppercase;pointer-events:none;}
 .win-close{
   width:16px;height:16px;border:.5px solid var(--accent);background:#fff;
   cursor:pointer;font-size:10px;color:var(--accent);
-  display:flex;align-items:center;justify-content:center;
-  line-height:1;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;
 }
-.win-close:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
-
+.win-close:hover{background:var(--accent);color:#fff;}
 .win-body{padding:22px 24px;}
-
-/* LOGO window */
-.logo-win-inner{
-  padding:0;
-  background:var(--bg);
-}
-.logo-win-inner svg{display:block;width:100%;height:auto;}
 
 /* ABOUT MODAL */
 .modal-overlay{position:fixed;inset:0;z-index:9500;background:rgba(26,26,26,.5);display:none;align-items:center;justify-content:center;}
@@ -98,7 +113,7 @@ body{
 .modal{background:var(--win);border:.5px solid var(--accent);width:min(520px,90vw);max-height:82vh;overflow-y:auto;}
 .modal-accent{height:2px;background:var(--accent);}
 .modal-bar{padding:8px 14px;border-bottom:.5px solid var(--accent);background:var(--accent);display:flex;align-items:center;justify-content:space-between;}
-.modal-lbl{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:#1ED760;text-transform:uppercase;}
+.modal-lbl{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:#fff;text-transform:uppercase;}
 .modal-x{width:18px;height:18px;border:.5px solid var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--accent);background:#fff;}
 .modal-x:hover{background:var(--accent);color:#fff;}
 .modal-body{padding:28px 30px;}
@@ -109,43 +124,43 @@ body{
 .about-tags{display:flex;flex-wrap:wrap;gap:5px;}
 .about-tag{font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:2px 9px;}
 
-/* rows — podcast / music */
+/* rows */
 .row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:.5px solid var(--accent);font-family:var(--en);font-size:16px;font-weight:300;cursor:pointer;}
 .row:last-of-type{border-bottom:none;}
 .row:hover{opacity:.45;}
 .row.on .row-t{border-bottom:2px solid var(--accent);}
-.row-n{font-size:8px;color:#1ED760;min-width:30px;flex-shrink:0;letter-spacing:.08em;}
+.row-n{font-size:8px;color:var(--green);min-width:30px;flex-shrink:0;letter-spacing:.08em;}
 .row-t{flex:1;}
-.row-s{font-size:8px;color:#1ED760;flex-shrink:0;}
-.row-g{font-size:8px;color:#1ED760;flex-shrink:0;margin-right:8px;}
+.row-s{font-size:8px;color:var(--green);flex-shrink:0;}
+.row-g{font-size:8px;color:var(--green);flex-shrink:0;margin-right:8px;}
 
-/* mini player */
+/* player */
 .player{margin-top:12px;border-top:.5px solid var(--accent);padding-top:12px;display:flex;align-items:center;gap:12px;}
 .pbtn{width:28px;height:28px;border:.5px solid var(--accent);background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.pbtn:hover{background:var(--accent);border-color:var(--accent);}
+.pbtn:hover{background:var(--accent);}
 .pbtn svg{width:11px;height:11px;fill:var(--ink);display:block;}
 .ptrack{flex:1;min-width:0;}
-.pnow{font-family:var(--en);font-size:9px;color:#1ED760;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pnow{font-family:var(--en);font-size:9px;color:var(--green);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pbar{height:1px;background:var(--dim);position:relative;}
 .pfill{position:absolute;top:0;left:0;height:100%;background:var(--accent);}
-.pdur{font-family:var(--en);font-size:9px;color:#1ED760;flex-shrink:0;}
+.pdur{font-family:var(--en);font-size:9px;color:var(--green);flex-shrink:0;}
 
 /* work card */
-.img-ph{width:100%;aspect-ratio:3/2;background:#D8D8D8;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
-.work-cat{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
-.work-title{font-family:var(--jp);font-size:15px;font-weight:300;line-height:1.5;margin-bottom:5px;color:#0000CC;}
-.work-date{font-family:var(--en);font-size:8px;color:#1ED760;margin-bottom:10px;}
-.work-link{font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;cursor:pointer;background:none;color:var(--ink);}
-.work-link:hover{background:var(--ink);color:var(--win);}
-
-/* cone window */
-.cone-inner{padding:16px;display:flex;align-items:center;justify-content:center;background:var(--win);}
-.cone-inner svg{display:block;width:100%;height:auto;}
+.img-ph{width:100%;aspect-ratio:3/2;background:#D8D8D8;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
+.work-cat{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;margin-top:10px;}
+.work-title{font-family:var(--jp);font-size:15px;font-weight:300;line-height:1.5;margin-bottom:5px;color:var(--blue);}
+.work-date{font-family:var(--en);font-size:8px;color:var(--green);margin-bottom:10px;}
 
 .loading{font-family:var(--en);font-size:8px;color:var(--muted);letter-spacing:.12em;padding:14px 0;text-align:center;}
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="ls-title">シマブク / PAIK</div>
+  <div class="ls-sub">Loading...</div>
+</div>
 
 <header class="site-header">
   <span class="header-title" onclick="openAbout()">シマブク / <span>PAIK</span></span>
@@ -160,10 +175,7 @@ body{
 <div class="modal-overlay" id="about-modal" onclick="if(event.target===this)closeAbout()">
   <div class="modal">
     <div class="modal-accent"></div>
-    <div class="modal-bar">
-      <span class="modal-lbl">About</span>
-      <span class="modal-x" onclick="closeAbout()">×</span>
-    </div>
+    <div class="modal-bar"><span class="modal-lbl">About</span><span class="modal-x" onclick="closeAbout()">×</span></div>
     <div class="modal-body" id="about-body"><div class="loading">Loading...</div></div>
   </div>
 </div>
@@ -201,7 +213,7 @@ body{
   </div>
 </div>
 
-<!-- WORKS (JS生成) -->
+<!-- WORKS -->
 <div id="works-container"></div>
 
 <footer class="site-footer">
@@ -210,7 +222,6 @@ body{
 </footer>
 
 <script>
-// ── Google Sheets URLs ──────────────────────
 const SHEETS = {
   about:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=1400416584&single=true&output=csv',
   works:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=2026004957&single=true&output=csv',
@@ -219,220 +230,211 @@ const SHEETS = {
   contact: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8G17QvAmRLCbaGbIXpv4WRajE--KIln_XC5L7XIcbgyp9qGDucOsSFCiRcVwRvaQugIUczx3IM9Cu/pub?gid=789321669&single=true&output=csv',
 };
 
-const HH = 44, FH = 44;
-let zTop = 100;
-let allIds = []; // 全ウィンドウID（シャッフル対象）
+const HH=44, FH=44;
+let zTop=100;
+let allIds=[];
+// 各ウィンドウの基準幅を記録（shuffle用）
+const baseWidths={};
 
-// ── CLAMP ────────────────────────────────────
-function cx(x, w){ return Math.max(0, Math.min(x, window.innerWidth - (w||0) - 2)); }
-function cy(y, h){ return Math.max(HH, Math.min(y, window.innerHeight - FH - 32)); }
+function cx(x,w){return Math.max(0,Math.min(x,window.innerWidth-(w||0)-2));}
+function cy(y,h){return Math.max(HH,Math.min(y,window.innerHeight-FH-32));}
 
-// ── BRING TO FRONT ───────────────────────────
 function bringTop(id){
-  const el = document.getElementById(id);
-  if(el){ zTop++; el.style.zIndex = zTop; }
+  const el=document.getElementById(id);
+  if(el){zTop++;el.style.zIndex=zTop;}
 }
+function closeWin(id){document.getElementById(id)?.classList.add('closed');}
+function openWin(id){document.getElementById(id)?.classList.remove('closed');}
 
-// ── CLOSE / OPEN ─────────────────────────────
-function closeWin(id){
-  const el = document.getElementById(id);
-  if(el) el.classList.add('closed');
-}
-function openWin(id){
-  const el = document.getElementById(id);
-  if(el) el.classList.remove('closed');
-}
+// ── ウィンドウ全体でドラッグ ──
+let dragEl=null, ox=0, oy=0;
+let touchEl=null, ttx=0, tty=0;
+let dragMoved=false; // ドラッグ判定（クリックと区別）
 
-// ── PLACE WINDOW ─────────────────────────────
-function placeWin(id, x, y, w, h){
-  const el = document.getElementById(id);
+function placeWin(id,x,y,w,h){
+  const el=document.getElementById(id);
   if(!el) return;
-  if(w) el.style.width = w + 'px';
-  if(h) el.style.height = h + 'px';
-  // クリックで最前面
-  el.addEventListener('mousedown',  () => bringTop(id));
-  el.addEventListener('touchstart', () => bringTop(id), {passive:true});
-  // クリック/タップでどこでも最前面
-  el.addEventListener('mousedown',  () => bringTop(id));
-  el.addEventListener('touchstart', () => bringTop(id), {passive:true});
-  // バーをドラッグハンドルに
-  const bar = el.querySelector('.win-bar');
-  if(bar){
-    bar.addEventListener('mousedown',  e => startDrag(e, id));
-    bar.addEventListener('touchstart', e => startTouch(e, id), {passive:false});
-  }
-  // 初期位置
+  if(w){el.style.width=w+'px'; baseWidths[id]=w;}
+  if(h) el.style.height=h+'px';
+
+  // ウィンドウ全体mousedown→ドラッグ
+  el.addEventListener('mousedown', e=>{
+    // ×ボタンは除外
+    if(e.target.classList.contains('win-close')) return;
+    bringTop(id);
+    dragEl=el; dragMoved=false;
+    const r=el.getBoundingClientRect();
+    ox=e.clientX-r.left; oy=e.clientY-r.top;
+    e.preventDefault();
+  });
+  // タッチ
+  el.addEventListener('touchstart', e=>{
+    if(e.target.classList.contains('win-close')) return;
+    bringTop(id);
+    touchEl=el; dragMoved=false;
+    const t=e.touches[0];
+    const r=el.getBoundingClientRect();
+    ttx=t.clientX-r.left; tty=t.clientY-r.top;
+  },{passive:true});
+
   setTimeout(()=>{
-    const ew = el.offsetWidth  || w || 300;
-    const eh = el.offsetHeight || h || 200;
-    el.style.left = cx(x, ew) + 'px';
-    el.style.top  = cy(y, eh) + 'px';
-  }, 0);
+    el.style.left=cx(x,el.offsetWidth||w||300)+'px';
+    el.style.top=cy(y,el.offsetHeight||h||200)+'px';
+  },0);
   if(!allIds.includes(id)) allIds.push(id);
 }
 
-// ── DRAG: MOUSE ──────────────────────────────
-let dragEl = null, ox = 0, oy = 0;
-
-function startDrag(e, id){
-  if(e.button !== 0) return;
-  dragEl = document.getElementById(id);
-  bringTop(id);
-  const r = dragEl.getBoundingClientRect();
-  ox = e.clientX - r.left;
-  oy = e.clientY - r.top;
-  e.preventDefault();
-}
-
-document.addEventListener('mousemove', e => {
+document.addEventListener('mousemove', e=>{
   if(!dragEl) return;
-  dragEl.style.left = cx(e.clientX - ox, dragEl.offsetWidth)  + 'px';
-  dragEl.style.top  = cy(e.clientY - oy, dragEl.offsetHeight) + 'px';
+  dragMoved=true;
+  dragEl.style.left=cx(e.clientX-ox,dragEl.offsetWidth)+'px';
+  dragEl.style.top=cy(e.clientY-oy,dragEl.offsetHeight)+'px';
 });
-document.addEventListener('mouseup', () => dragEl = null);
+document.addEventListener('mouseup',()=>{dragEl=null;});
 
-// ── DRAG: TOUCH (スマホ) ─────────────────────
-let touchEl = null, ttx = 0, tty = 0;
-
-function startTouch(e, id){
-  touchEl = document.getElementById(id);
-  bringTop(id);
-  const t = e.touches[0];
-  const r = touchEl.getBoundingClientRect();
-  ttx = t.clientX - r.left;
-  tty = t.clientY - r.top;
-  e.preventDefault();
-}
-
-document.addEventListener('touchmove', e => {
+document.addEventListener('touchmove', e=>{
   if(!touchEl) return;
-  const t = e.touches[0];
-  touchEl.style.left = cx(t.clientX - ttx, touchEl.offsetWidth)  + 'px';
-  touchEl.style.top  = cy(t.clientY - tty, touchEl.offsetHeight) + 'px';
+  dragMoved=true;
+  const t=e.touches[0];
+  touchEl.style.left=cx(t.clientX-ttx,touchEl.offsetWidth)+'px';
+  touchEl.style.top=cy(t.clientY-tty,touchEl.offsetHeight)+'px';
   e.preventDefault();
-}, {passive: false});
+},{passive:false});
+document.addEventListener('touchend',()=>{touchEl=null;});
 
-document.addEventListener('touchend', () => touchEl = null);
-
-// ── SHUFFLE ───────────────────────────────────
+// ── SHUFFLE: 位置・サイズ・z-index をランダムに ──
 function doShuffle(){
-  // 閉じたウィンドウを全部復活
-  allIds.forEach(id => openWin(id));
-  // z-index をランダムに入れ替え
-  const zs = allIds.map(id => parseInt(document.getElementById(id)?.style.zIndex||10));
-  for(let i = zs.length-1; i > 0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [zs[i],zs[j]] = [zs[j],zs[i]];
+  const vw=window.innerWidth, vh=window.innerHeight;
+  allIds.forEach(id=>{
+    openWin(id);
+    const el=document.getElementById(id);
+    if(!el) return;
+
+    // サイズ: 基準の 0.5× or 1× or 2× をランダム
+    const bw=baseWidths[id]||Math.round(vw*0.5);
+    const scales=[0.5,1,2];
+    const scale=scales[Math.floor(Math.random()*scales.length)];
+    const newW=Math.round(Math.min(bw*scale, vw*0.92));
+    el.style.width=newW+'px';
+
+    // 位置: 画面内ランダム
+    const eh=el.offsetHeight||200;
+    el.style.left=cx(Math.random()*(vw-newW), newW)+'px';
+    el.style.top=cy(HH+Math.random()*(vh-HH-FH-eh), eh)+'px';
+  });
+
+  // z-index シャッフル
+  const zs=allIds.map(id=>parseInt(document.getElementById(id)?.style.zIndex||10));
+  for(let i=zs.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [zs[i],zs[j]]=[zs[j],zs[i]];
   }
-  allIds.forEach((id,i) => {
-    const el = document.getElementById(id);
-    if(el) el.style.zIndex = zs[i];
+  allIds.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el) el.style.zIndex=zs[i];
   });
 }
 
-// ── LAYOUT ───────────────────────────────────
+// ── LAYOUT ──
 function layoutAll(){
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const avail = vh - HH - FH;
-
-  // ウィンドウ幅: 画面の55% (1〜2枚しか見えない大きさ)
-  const wLarge  = Math.round(vw * 0.55); // メインウィンドウ
-  const wMedium = Math.round(vw * 0.48); // やや小さめ
-  const wCone   = Math.round(vw * 0.28); // コーンは縦長なので細め
-
-  // 2列ベースで少しずらして重ねる
-  const col0x = Math.round(vw * 0.03);
-  const col1x = Math.round(vw * 0.38);
-
-  const fixed = [
-    {id:'w-podcast', w:wMedium, x:col0x,         y:Math.round(HH + avail*0.04)},
-    {id:'w-music',   w:wMedium, x:col1x,          y:Math.round(HH + avail*0.06)},
+  const vw=window.innerWidth, vh=window.innerHeight, avail=vh-HH-FH;
+  const wM=Math.round(vw*0.48);
+  const col0=Math.round(vw*0.03), col1=Math.round(vw*0.38);
+  const fixed=[
+    {id:'w-podcast',w:wM,x:col0,y:Math.round(HH+avail*0.04)},
+    {id:'w-music',  w:wM,x:col1,y:Math.round(HH+avail*0.06)},
   ];
-
-  fixed.forEach((f, i) => {
-    placeWin(f.id, f.x, f.y, f.w, 0);
-    document.getElementById(f.id).style.zIndex = 10 + i;
+  fixed.forEach((f,i)=>{
+    placeWin(f.id,f.x,f.y,f.w,0);
+    document.getElementById(f.id).style.zIndex=10+i;
   });
 }
 
-// ── WORKS ウィンドウ生成 ──────────────────────
+// ── WORKS ──
 function buildWorkWins(works){
-  const container = document.getElementById('works-container');
-  container.innerHTML = '';
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const avail = vh - HH - FH;
-  // Worksウィンドウ幅: 画面の50% (ビジュアル系は大きく)
-  const ww = Math.round(vw * 0.50);
+  const container=document.getElementById('works-container');
+  container.innerHTML='';
+  const vw=window.innerWidth, vh=window.innerHeight, avail=vh-HH-FH;
+  const ww=Math.round(vw*0.50);
+  const col0=Math.round(vw*0.03), col1=Math.round(vw*0.40);
 
-  // 2列・少しずつずらして新しい順に上に重なる配置
-  const col0x = Math.round(vw * 0.03);
-  const col1x = Math.round(vw * 0.40);
+  works.forEach((w,i)=>{
+    const id=`w-work-${i}`;
+    const el=document.createElement('div');
+    el.className='win';
+    el.id=id;
 
-  works.forEach((w, i) => {
-    const id = `w-work-${i}`;
-    const el = document.createElement('div');
-    el.className = 'win';
-    el.id = id;
-    // URL正規化（GitHub blob → raw変換）
-    const normalizeUrl = (url) => {
-      if(!url) return url;
-      if(url.includes('github.com') && url.includes('/blob/'))
-        return url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/' );
+    // たまに濃い青ウィンドウ（約25%の確率）
+    const isBlue=Math.random()<0.25;
+    if(isBlue) el.classList.add('blue-win');
+    const winColor=isBlue?'var(--blue)':'var(--accent)';
+
+    const norm=url=>{
+      if(!url) return '';
+      if(url.includes('github.com')&&url.includes('/blob/'))
+        return url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/');
       return url;
     };
-    const imgUrl   = normalizeUrl(w.image_url || ''); // F列: 画像専用
-    const linkUrl  = normalizeUrl(w.url || '');       // D列: リンク専用
-    const embedUrl = normalizeUrl(w.embed_url || ''); // E列: YouTube専用
+    const imgUrl  =norm(w.image_url||'');
+    const linkUrl =norm(w.url||'');
+    const embedUrl=norm(w.embed_url||'');
 
-    // コンテンツエリア: YouTube埋め込み → image_url → url画像 → プレースホルダー
-    const isYouTubeEmbed = embedUrl && (embedUrl.includes('youtube.com/embed') || embedUrl.includes('youtu.be'));
-    const isImageUrl = (url) => url && (
-      url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i) ||
-      url.includes('raw.githubusercontent.com') ||
-      url.startsWith('/') ||
-      url.includes('drive.google.com/uc') ||
-      url.includes('googleusercontent.com') ||
-      url.includes('imgur.com') ||
-      url.includes('cloudinary.com')
+    const isYT=embedUrl&&(embedUrl.includes('youtube.com/embed')||embedUrl.includes('youtu.be'));
+    const isSpotifyEmbed=embedUrl&&embedUrl.includes('spotify.com/embed');
+    const isImg=url=>url&&(
+      url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i)||
+      url.includes('raw.githubusercontent.com')||
+      url.startsWith('/')||
+      url.includes('drive.google.com/uc')||
+      url.includes('googleusercontent.com')
     );
 
-    const mediaHTML = isYouTubeEmbed
-      ? `<div style="position:relative;width:100%;padding-top:56.25%;background:#000;">
-           <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-         </div>`
-      : isImageUrl(imgUrl)
-        ? `<img src="${imgUrl}" style="display:block;width:100%;height:auto;" alt="${w.title||''}">`
-        : isImageUrl(linkUrl)
-          ? `<img src="${linkUrl}" style="display:block;width:100%;height:auto;" alt="${w.title||''}">`
-          : `<div class="img-ph">Image</div>`;
-
-    // リンクボタン: linkUrl（D列）をボタンとして表示
-    let linkHTML = '';
-    if(linkUrl && !isImageUrl(linkUrl)){
-      const isSpotify = linkUrl.includes('spotify.com');
-      const isYouTube = linkUrl.includes('youtube.com') || linkUrl.includes('youtu.be');
-      if(isSpotify){
-        linkHTML = `<a href="${linkUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--accent);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-          Spotify
-        </a>`;
-      } else if(isYouTube){
-        linkHTML = `<a href="${linkUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--accent);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">YouTube →</a>`;
+    // メディア部分
+    let mediaHTML='';
+    if(isYT){
+      mediaHTML=`<div style="position:relative;width:100%;padding-top:56.25%;background:#000;">
+        <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe>
+      </div>`;
+    } else if(isSpotifyEmbed){
+      mediaHTML=`<div style="width:100%;">
+        <iframe src="${embedUrl}" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy" style="border-radius:0;"></iframe>
+      </div>`;
+    } else {
+      const imgSrc=isImg(imgUrl)?imgUrl:isImg(linkUrl)?linkUrl:'';
+      if(imgSrc){
+        // 画像クリックでリンク遷移
+        const clickAttr=linkUrl&&!isImg(linkUrl)?`onclick="window.open('${linkUrl}','_blank')" style="cursor:pointer;"`:'';
+        mediaHTML=`<img src="${imgSrc}" ${clickAttr} style="display:block;width:100%;height:auto;" alt="${w.title||''}">`;
       } else {
-        linkHTML = `<a href="${linkUrl}" target="_blank" style="font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--accent);padding:4px 12px;color:var(--ink);text-decoration:none;display:inline-block;margin-top:8px;">Open →</a>`;
+        mediaHTML=`<div class="img-ph">Image</div>`;
       }
     }
 
-    el.innerHTML = `
+    // リンクボタン（画像でない場合）
+    let linkHTML='';
+    if(linkUrl&&!isImg(linkUrl)){
+      const isSp=linkUrl.includes('spotify.com');
+      const isYTLink=linkUrl.includes('youtube.com')||linkUrl.includes('youtu.be');
+      const btnStyle=`display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid ${winColor};padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;`;
+      if(isSp){
+        linkHTML=`<a href="${linkUrl}" target="_blank" style="${btnStyle}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          Spotify</a>`;
+      } else if(isYTLink){
+        linkHTML=`<a href="${linkUrl}" target="_blank" style="${btnStyle}">YouTube →</a>`;
+      } else {
+        linkHTML=`<a href="${linkUrl}" target="_blank" style="${btnStyle}">Open →</a>`;
+      }
+    }
+
+    el.innerHTML=`
       <div class="win-accent"></div>
       <div class="win-bar">
         <span class="win-label">${w.category||'Work'} / ${w.date||''}</span>
         <button class="win-close" onclick="closeWin('${id}')">×</button>
       </div>
       ${mediaHTML}
-      <div class="win-body" style="padding:12px 14px 14px;">
+      <div class="win-body" style="padding:0 14px 14px;">
         <div class="work-cat">${w.category||''}</div>
         <div class="work-title">${w.title||''}</div>
         <div class="work-date">${w.date||''}</div>
@@ -440,31 +442,29 @@ function buildWorkWins(works){
       </div>`;
     container.appendChild(el);
 
-    // 新しい順（i=0が最新）が最上位 — スプレッドシートの上の行ほど前に表示
-    const baseZ = 200 - i;
-    el.style.zIndex = baseZ;
+    const baseZ=200-i;
+    el.style.zIndex=baseZ;
 
-    // 2列で交互に、少しずつ下にずらして重ねる
-    const isLeft = i % 2 === 0;
-    const jx = (Math.random()-0.5) * Math.round(vw*0.04);
-    const jy = (Math.random()-0.5) * Math.round(avail*0.04);
-    const x = (isLeft ? col0x : col1x) + jx;
-    const y = Math.round(HH + avail*0.10 + Math.floor(i/2) * Math.round(avail*0.06)) + jy;
+    const isLeft=i%2===0;
+    const jx=(Math.random()-.5)*Math.round(vw*0.04);
+    const jy=(Math.random()-.5)*Math.round((vh-HH-FH)*0.04);
+    const x=(isLeft?col0:col1)+jx;
+    const y=Math.round(HH+(vh-HH-FH)*0.10+Math.floor(i/2)*Math.round((vh-HH-FH)*0.06))+jy;
 
-    placeWin(id, x, y, ww, 0);
-    el.style.zIndex = baseZ; // placeWin後も新しい順を維持
+    placeWin(id,x,y,ww,0);
+    el.style.zIndex=baseZ;
   });
 }
 
 function revealWorks(){
-  const first = document.getElementById('w-work-0');
-  if(first) bringTop('w-work-0');
+  const el=document.getElementById('w-work-0');
+  if(el) bringTop('w-work-0');
 }
 
-// ── CSV ──────────────────────────────────────
+// ── CSV ──
 function parseCSV(text){
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  const lines=text.trim().split('\n');
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
   return lines.slice(1).filter(l=>l.trim()).map(line=>{
     const vals=[]; let cur='',inQ=false;
     for(let c of line){
@@ -478,91 +478,85 @@ function parseCSV(text){
     return obj;
   });
 }
-
 async function fetchSheet(key){
   const url=SHEETS[key];
   if(!url||url.startsWith('YOUR_')) return null;
-  try{ const r=await fetch(url); return parseCSV(await r.text()); }
-  catch(e){ return null; }
+  try{const r=await fetch(url);return parseCSV(await r.text());}
+  catch(e){return null;}
 }
 
-// ── ABOUT ────────────────────────────────────
+// ── ABOUT ──
 async function loadAbout(){
-  const data = await fetchSheet('about');
-  const d = data?.[0] || {};
-  const tags = (d.tags||'DTP / Music / Podcast / Tokyo').split('/').map(t=>t.trim()).filter(Boolean);
-  document.getElementById('about-body').innerHTML = `
+  const data=await fetchSheet('about');
+  const d=data?.[0]||{};
+  const tags=(d.tags||'DTP / Music / Podcast / Tokyo').split('/').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('about-body').innerHTML=`
     <div class="about-name">${d.name||'SHIMABUKU'}</div>
     <div class="about-sub">${d.name_jp||'シマブク（パピー）'}</div>
     <div class="about-handle">${d.handle||'@r_shimabuk'}</div>
     <div class="about-bio">${(d.bio||'ここに自己紹介が入ります。').replace(/\\n/g,'<br>')}</div>
     <div class="about-tags">${tags.map(t=>`<span class="about-tag">${t}</span>`).join('')}</div>`;
 }
-function openAbout(){ document.getElementById('about-modal').classList.add('open'); }
-function closeAbout(){ document.getElementById('about-modal').classList.remove('open'); }
+function openAbout(){document.getElementById('about-modal').classList.add('open');}
+function closeAbout(){document.getElementById('about-modal').classList.remove('open');}
 
-// ── CONTACT ──────────────────────────────────
+// ── CONTACT ──
 async function loadContact(){
-  const data = await fetchSheet('contact');
+  const data=await fetchSheet('contact');
   if(data?.[0]){
-    if(data[0].instagram) document.getElementById('contact-link').href = data[0].instagram;
-    if(data[0].footer)    document.getElementById('footer-copy').textContent = data[0].footer;
+    if(data[0].instagram) document.getElementById('contact-link').href=data[0].instagram;
+    if(data[0].footer)    document.getElementById('footer-copy').textContent=data[0].footer;
   }
 }
 
-// ── PODCAST ──────────────────────────────────
+// ── PODCAST ──
 async function loadPodcast(){
-  const data = await fetchSheet('podcast');
-  const eps = data || [
-    {number:'#012',title:'深夜の独り言',duration:'23:14'},
-    {number:'#011',title:'音と記憶',duration:'31:07'},
-    {number:'#010',title:'制作の話',duration:'18:44'},
-    {number:'#009',title:'ループと感情',duration:'27:55'},
-  ];
-  document.getElementById('podcast-list').innerHTML = eps.map((ep,i)=>`
-    <div class="row ${i===0?'on':''}" onclick="pickEp(this,'${ep.title}','${ep.duration}','${ep.spotify_url||''}')">
+  const data=await fetchSheet('podcast');
+  const eps=data||[{number:'#001',title:'Sample',duration:'00:00',spotify_url:''}];
+  document.getElementById('podcast-list').innerHTML=eps.map((ep,i)=>`
+    <div class="row ${i===0?'on':''}" onclick="pickEp(this,'${(ep.title||'').replace(/'/g,"\\'")}','${ep.duration||''}','${ep.spotify_url||''}','${ep.embed_url||''}')">
       <span class="row-n">${ep.number||'#'+String(i+1).padStart(3,'0')}</span>
-      <span class="row-t">${ep.title}</span>
-      <span class="row-s">${ep.duration}</span>
-      ${ep.spotify_url ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>` : ''}
+      <span class="row-t">${ep.title||''}</span>
+      <span class="row-s">${ep.duration||''}</span>
+      ${ep.spotify_url?`<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`:''}
     </div>`).join('');
   if(eps.length>0){
     document.getElementById('podcast-player').style.display='flex';
-    document.getElementById('p-now').textContent=eps[0].title;
-    document.getElementById('p-dur').textContent=eps[0].duration;
+    document.getElementById('p-now').textContent=eps[0].title||'';
+    document.getElementById('p-dur').textContent=eps[0].duration||'';
   }
 }
 
-function pickEp(row,title,dur,spotifyUrl){
+function pickEp(row,title,dur,spotifyUrl,embedUrl){
   row.closest('.win-body').querySelectorAll('.row').forEach(r=>r.classList.remove('on'));
   row.classList.add('on');
   document.getElementById('p-now').textContent=title;
   document.getElementById('p-dur').textContent=dur;
   document.getElementById('p-fill').style.width='0%';
-  if(spotifyUrl) window.open(spotifyUrl,'_blank');
+  // Spotify埋め込みがあればプレイヤー部分に表示
+  if(embedUrl&&embedUrl.includes('spotify.com/embed')){
+    document.getElementById('podcast-player').innerHTML=`
+      <iframe src="${embedUrl}" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy" style="border-radius:0;margin-top:4px;"></iframe>`;
+  } else if(spotifyUrl){
+    window.open(spotifyUrl,'_blank');
+  }
 }
 
-// ── MUSIC ────────────────────────────────────
+// ── MUSIC ──
 async function loadMusic(){
-  const data = await fetchSheet('music');
-  const tracks = data || [
-    {number:'01',title:'Neon Fog',genre:'Ambient',duration:'4:23'},
-    {number:'02',title:'Concrete Sky',genre:'Lo-fi',duration:'3:51'},
-    {number:'03',title:'Drift',genre:'Electronic',duration:'5:08'},
-    {number:'04',title:'Signal',genre:'Experimental',duration:'6:17'},
-    {number:'05',title:'Hollow',genre:'Ambient',duration:'4:02'},
-  ];
-  document.getElementById('music-list').innerHTML = tracks.map((t,i)=>`
-    <div class="row ${i===0?'on':''}" onclick="pickTrack(this,'${t.title}','${t.spotify_url||''}')">
+  const data=await fetchSheet('music');
+  const tracks=data||[{number:'01',title:'Sample',genre:'',duration:'0:00',spotify_url:''}];
+  document.getElementById('music-list').innerHTML=tracks.map((t,i)=>`
+    <div class="row ${i===0?'on':''}" onclick="pickTrack(this,'${(t.title||'').replace(/'/g,"\\'")}','${t.spotify_url||''}')">
       <span class="row-n">${t.number||String(i+1).padStart(2,'0')}</span>
-      <span class="row-t">${t.title}</span>
+      <span class="row-t">${t.title||''}</span>
       <span class="row-g">${t.genre||''}</span>
       <span class="row-s">${t.duration||''}</span>
-      ${t.spotify_url ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>` : ''}
+      ${t.spotify_url?`<svg width="10" height="10" viewBox="0 0 24 24" fill="#1DB954" style="flex-shrink:0;margin-left:4px;"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`:''}
     </div>`).join('');
   if(tracks.length>0){
     document.getElementById('music-player').style.display='flex';
-    document.getElementById('m-now').textContent=tracks[0].title;
+    document.getElementById('m-now').textContent=tracks[0].title||'';
   }
 }
 
@@ -574,26 +568,20 @@ function pickTrack(row,title,spotifyUrl){
   if(spotifyUrl) window.open(spotifyUrl,'_blank');
 }
 
-// ── WORKS ────────────────────────────────────
+// ── WORKS ──
 async function loadWorks(){
-  const data = await fetchSheet('works');
-  const works = data || [
-    {category:'グラフィック',  title:'ポスターA', url:'', date:'2025'},
-    {category:'CDアートワーク',title:'Album Art', url:'', date:'2025'},
-    {category:'YouTube',       title:'Vlog #01',  url:'', date:'2025'},
-    {category:'楽曲',           title:'Neon Fog',  url:'', date:'2024'},
-    {category:'ポッドキャスト',title:'ep.012',    url:'', date:'2024'},
-    {category:'イベント',       title:'Exhibition 2024', url:'', date:'2024'},
-    {category:'文章',           title:'制作と孤独について', url:'', date:'2024'},
-    {category:'グラフィック',  title:'ポスターB', url:'', date:'2023'},
+  const data=await fetchSheet('works');
+  const works=data||[
+    {category:'CDアートワーク',title:'convex mirror e.p.',url:'',date:'2024'},
+    {category:'YouTube',title:'Sample',url:'',embed_url:'',date:'2025'},
   ];
   buildWorkWins(works);
 }
 
-// ── PLAY/PAUSE ───────────────────────────────
-const timers = {};
-function togglePlay(btn, fillId){
-  const on = btn.dataset.on === '1';
+// ── PLAY/PAUSE ──
+const timers={};
+function togglePlay(btn,fillId){
+  const on=btn.dataset.on==='1';
   if(on){
     btn.dataset.on='0';
     btn.querySelector('svg').innerHTML='<path d="M8 5v14l11-7z"/>';
@@ -607,16 +595,31 @@ function togglePlay(btn, fillId){
   }
 }
 
-// ── INIT ─────────────────────────────────────
-// リサイズ時に固定ウィンドウの幅・位置を再計算
-window.addEventListener('resize', () => {
-  layoutAll();
-});
+// ── INIT ──
+window.addEventListener('resize',()=>layoutAll());
 
-window.addEventListener('load', async () => {
+window.addEventListener('load', async ()=>{
   layoutAll();
-  await Promise.all([loadAbout(), loadContact(), loadPodcast(), loadMusic()]);
-  await loadWorks();
+
+  // ローディングは最大2秒で必ず消す（データ取得と切り離す）
+  const hideLoading=()=>{
+    const ls=document.getElementById('loading-screen');
+    if(!ls||ls.style.display==='none') return;
+    ls.classList.add('hide');
+    setTimeout(()=>ls.style.display='none',600);
+  };
+  setTimeout(hideLoading, 2000); // 最大2秒
+
+  // データ取得（失敗しても画面は消える）
+  try{
+    await Promise.all([loadAbout(),loadContact(),loadPodcast(),loadMusic()]);
+    await loadWorks();
+  }catch(e){
+    console.warn('load error',e);
+  }
+
+  // データ取得完了後0.8秒で消す（2秒より早く終わった場合）
+  setTimeout(hideLoading, 800);
 });
 </script>
 </body>
