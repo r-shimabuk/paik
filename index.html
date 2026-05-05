@@ -310,9 +310,9 @@ function doShuffle(){
     const el=document.getElementById(id);
     if(!el) return;
 
-    // サイズ: 基準の 0.5× or 1× or 2× をランダム
+    // サイズ: 基準の 1× or 0.5× or 0.3× をランダム
     const bw=baseWidths[id]||Math.round(vw*0.5);
-    const scales=[0.5,1,2];
+    const scales=[1, 0.5, 0.3];
     const scale=scales[Math.floor(Math.random()*scales.length)];
     const newW=Math.round(Math.min(bw*scale, vw*0.92));
     el.style.width=newW+'px';
@@ -402,9 +402,11 @@ function buildWorkWins(works){
     } else {
       const imgSrc=isImg(imgUrl)?imgUrl:isImg(linkUrl)?linkUrl:'';
       if(imgSrc){
-        // 画像クリックでリンク遷移
-        const clickAttr=linkUrl&&!isImg(linkUrl)?`onclick="window.open('${linkUrl}','_blank')" style="cursor:pointer;"`:'';
-        mediaHTML=`<img src="${imgSrc}" ${clickAttr} style="display:block;width:100%;height:auto;" alt="${w.title||''}">`;
+        // 最前面のウィンドウのみリンク遷移、それ以外は前に持ってくるだけ
+        const clickHandler=linkUrl&&!isImg(linkUrl)
+          ? `onclick="handleImgClick(event,'${id}','${linkUrl}')"`
+          : '';
+        mediaHTML=`<img src="${imgSrc}" ${clickHandler} style="display:block;width:100%;height:auto;cursor:pointer;" alt="${w.title||''}">`;
       } else {
         mediaHTML=`<div class="img-ph">Image</div>`;
       }
@@ -454,6 +456,28 @@ function buildWorkWins(works){
     placeWin(id,x,y,ww,0);
     el.style.zIndex=baseZ;
   });
+}
+
+// 最前面のウィンドウIDを返す
+function getTopWinId(){
+  let maxZ=-1, topId=null;
+  allIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el||el.classList.contains('closed')) return;
+    const z=parseInt(el.style.zIndex||0);
+    if(z>maxZ){maxZ=z;topId=id;}
+  });
+  return topId;
+}
+
+// 画像クリック: 最前面なら遷移、そうでなければ前に持ってくる
+function handleImgClick(e, id, url){
+  e.stopPropagation();
+  if(getTopWinId()===id){
+    window.open(url,'_blank');
+  } else {
+    bringTop(id);
+  }
 }
 
 function revealWorks(){
