@@ -30,17 +30,16 @@ body{
   position:fixed;inset:0;z-index:99999;
   background:var(--accent);
   display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:8px;
-  transition:opacity .5s ease;
+  transition:opacity .6s ease;
 }
 #loading-screen.hide{opacity:0;pointer-events:none;}
-#loading-screen .ls-title{
-  font-family:var(--jp);font-size:18px;font-weight:300;
-  letter-spacing:.2em;color:#fff;
-}
-#loading-screen .ls-sub{
-  font-family:var(--en);font-size:11px;font-weight:300;
-  letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.7);
+
+/* 黒背景・白コーン → screen合成でオレンジ背景に白く乗る */
+#loading-video{
+  width:min(320px, 60vw);
+  height:auto;
+  display:block;
+  mix-blend-mode:screen;
 }
 
 /* HEADER */
@@ -158,8 +157,9 @@ body{
 
 <!-- LOADING SCREEN -->
 <div id="loading-screen">
-  <div class="ls-title">シマブク / PAIK</div>
-  <div class="ls-sub">Loading...</div>
+  <video id="loading-video" autoplay muted playsinline loop>
+    <source src="paik-08_1.mp4" type="video/mp4">
+  </video>
 </div>
 
 <header class="site-header">
