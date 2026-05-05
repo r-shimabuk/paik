@@ -413,7 +413,8 @@ function buildWorkWins(works){
       </div>`;
     container.appendChild(el);
 
-    const baseZ=200-i;
+    // 新しい順（行番号が大きい=後に追加）が最上位
+    const baseZ = 100 + i;
     el.style.zIndex=baseZ;
 
     const isLeft=i%2===0;
