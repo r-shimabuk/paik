@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -19,7 +18,7 @@
 html,body{width:100%;height:100%;overflow:hidden;}
 body{
   background:#F6F7F8;
-  background-image:radial-gradient(circle,rgba(232,61,34,.22) 1.4px,transparent 1.4px);
+  background-image:radial-gradient(circle,rgba(30,215,96,.35) 1.4px,transparent 1.4px);
   background-size:22px 22px;
   font-family:var(--en);color:var(--ink);user-select:none;
 }
@@ -53,7 +52,7 @@ body{
 .win{
   position:fixed;
   background:var(--win);
-  border:.5px solid var(--ink);
+  border:.5px solid var(--accent);
   z-index:10;
 }
 .win.closed{display:none;}
@@ -62,8 +61,8 @@ body{
 
 .win-bar{
   padding:7px 12px;
-  border-bottom:.5px solid var(--ink);
-  background:var(--bar);
+  border-bottom:.5px solid var(--accent);
+  background:var(--accent);
   display:flex;align-items:center;justify-content:space-between;
   cursor:grab;
   -webkit-user-select:none;user-select:none;
@@ -72,13 +71,13 @@ body{
 
 .win-label{
   font-family:var(--en);font-size:8px;font-weight:300;
-  letter-spacing:.22em;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.22em;color:#1ED760;text-transform:uppercase;
   pointer-events:none;
 }
 
 .win-close{
-  width:16px;height:16px;border:.5px solid var(--ink);background:none;
-  cursor:pointer;font-size:10px;color:var(--ink);
+  width:16px;height:16px;border:.5px solid var(--accent);background:#fff;
+  cursor:pointer;font-size:10px;color:var(--accent);
   display:flex;align-items:center;justify-content:center;
   line-height:1;flex-shrink:0;
 }
@@ -96,12 +95,12 @@ body{
 /* ABOUT MODAL */
 .modal-overlay{position:fixed;inset:0;z-index:9500;background:rgba(26,26,26,.5);display:none;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--win);border:.5px solid var(--ink);width:min(520px,90vw);max-height:82vh;overflow-y:auto;}
+.modal{background:var(--win);border:.5px solid var(--accent);width:min(520px,90vw);max-height:82vh;overflow-y:auto;}
 .modal-accent{height:2px;background:var(--accent);}
-.modal-bar{padding:8px 14px;border-bottom:.5px solid var(--ink);background:var(--bar);display:flex;align-items:center;justify-content:space-between;}
-.modal-lbl{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;}
-.modal-x{width:18px;height:18px;border:.5px solid var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--ink);}
-.modal-x:hover{background:var(--ink);color:var(--win);}
+.modal-bar{padding:8px 14px;border-bottom:.5px solid var(--accent);background:var(--accent);display:flex;align-items:center;justify-content:space-between;}
+.modal-lbl{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:#1ED760;text-transform:uppercase;}
+.modal-x{width:18px;height:18px;border:.5px solid var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--accent);background:#fff;}
+.modal-x:hover{background:var(--accent);color:#fff;}
 .modal-body{padding:28px 30px;}
 .about-name{font-family:var(--en);font-size:32px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;line-height:1;margin-bottom:4px;}
 .about-sub{font-family:var(--jp);font-size:11px;font-weight:300;letter-spacing:.18em;color:var(--muted);margin-bottom:10px;}
@@ -111,31 +110,31 @@ body{
 .about-tag{font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:2px 9px;}
 
 /* rows — podcast / music */
-.row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:.5px solid var(--dim);font-family:var(--en);font-size:16px;font-weight:300;cursor:pointer;}
+.row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:.5px solid var(--accent);font-family:var(--en);font-size:16px;font-weight:300;cursor:pointer;}
 .row:last-of-type{border-bottom:none;}
 .row:hover{opacity:.45;}
 .row.on .row-t{border-bottom:2px solid var(--accent);}
-.row-n{font-size:8px;color:var(--muted);min-width:30px;flex-shrink:0;letter-spacing:.08em;}
+.row-n{font-size:8px;color:#1ED760;min-width:30px;flex-shrink:0;letter-spacing:.08em;}
 .row-t{flex:1;}
-.row-s{font-size:8px;color:var(--muted);flex-shrink:0;}
-.row-g{font-size:8px;color:var(--muted);flex-shrink:0;margin-right:8px;}
+.row-s{font-size:8px;color:#1ED760;flex-shrink:0;}
+.row-g{font-size:8px;color:#1ED760;flex-shrink:0;margin-right:8px;}
 
 /* mini player */
-.player{margin-top:12px;border-top:.5px solid var(--dim);padding-top:12px;display:flex;align-items:center;gap:12px;}
-.pbtn{width:28px;height:28px;border:.5px solid var(--ink);background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.player{margin-top:12px;border-top:.5px solid var(--accent);padding-top:12px;display:flex;align-items:center;gap:12px;}
+.pbtn{width:28px;height:28px;border:.5px solid var(--accent);background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .pbtn:hover{background:var(--accent);border-color:var(--accent);}
 .pbtn svg{width:11px;height:11px;fill:var(--ink);display:block;}
 .ptrack{flex:1;min-width:0;}
-.pnow{font-family:var(--en);font-size:9px;color:var(--muted);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pnow{font-family:var(--en);font-size:9px;color:#1ED760;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pbar{height:1px;background:var(--dim);position:relative;}
 .pfill{position:absolute;top:0;left:0;height:100%;background:var(--accent);}
-.pdur{font-family:var(--en);font-size:9px;color:var(--muted);flex-shrink:0;}
+.pdur{font-family:var(--en);font-size:9px;color:#1ED760;flex-shrink:0;}
 
 /* work card */
 .img-ph{width:100%;aspect-ratio:3/2;background:#D8D8D8;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
 .work-cat{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
 .work-title{font-family:var(--jp);font-size:15px;font-weight:300;line-height:1.5;margin-bottom:5px;}
-.work-date{font-family:var(--en);font-size:8px;color:var(--muted);margin-bottom:10px;}
+.work-date{font-family:var(--en);font-size:8px;color:#1ED760;margin-bottom:10px;}
 .work-link{font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;cursor:pointer;background:none;color:var(--ink);}
 .work-link:hover{background:var(--ink);color:var(--win);}
 
@@ -301,6 +300,9 @@ function placeWin(id, x, y, w, h){
   // クリックで最前面
   el.addEventListener('mousedown',  () => bringTop(id));
   el.addEventListener('touchstart', () => bringTop(id), {passive:true});
+  // クリック/タップでどこでも最前面
+  el.addEventListener('mousedown',  () => bringTop(id));
+  el.addEventListener('touchstart', () => bringTop(id), {passive:true});
   // バーをドラッグハンドルに
   const bar = el.querySelector('.win-bar');
   if(bar){
@@ -423,10 +425,20 @@ function buildWorkWins(works){
     const el = document.createElement('div');
     el.className = 'win';
     el.id = id;
+    // URL正規化（GitHub blob → raw変換）
+    const normalizeUrl = (url) => {
+      if(!url) return url;
+      if(url.includes('github.com') && url.includes('/blob/'))
+        return url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/' );
+      return url;
+    };
+    const imgUrl   = normalizeUrl(w.url);
+    const embedUrl = normalizeUrl(w.embed_url);
+
     // コンテンツエリア: YouTube埋め込み → 画像 → プレースホルダーの優先順
     const isYouTubeEmbed = embedUrl && (embedUrl.includes('youtube.com/embed') || embedUrl.includes('youtu.be'));
     const isImageUrl = (url) => url && (
-      url.match(/\.(jpg|jpeg|png|gif|webp|svg|png)(\?|$)/i) ||
+      url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i) ||
       url.includes('raw.githubusercontent.com') ||
       url.includes('drive.google.com/uc') ||
       url.includes('googleusercontent.com') ||
@@ -476,16 +488,8 @@ function buildWorkWins(works){
       </div>`;
     container.appendChild(el);
 
-    // raw.githubusercontent.com のURLをそのまま使う（最も確実）
-    const normalizeUrl = (url) => {
-      if(!url) return url;
-      // GitHub blob URLをraw URLに変換
-      if(url.includes('github.com') && url.includes('/blob/'))
-        return url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/' );
-      return url;
-    };
-    const imgUrl = normalizeUrl(w.url);
-    const embedUrl = normalizeUrl(w.embed_url);
+    // 新しい順（i=0が最新）が最上位 — スプレッドシートの上の行ほど前に表示
+    const baseZ = 200 - i;
     el.style.zIndex = baseZ;
 
     // 2列で交互に、少しずつ下にずらして重ねる
@@ -496,7 +500,7 @@ function buildWorkWins(works){
     const y = Math.round(HH + avail*0.10 + Math.floor(i/2) * Math.round(avail*0.06)) + jy;
 
     placeWin(id, x, y, ww, 0);
-    el.style.zIndex = baseZ;
+    el.style.zIndex = baseZ; // placeWin後も新しい順を維持
   });
 }
 
