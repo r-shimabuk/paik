@@ -422,27 +422,41 @@ function buildWorkWins(works){
     const el = document.createElement('div');
     el.className = 'win';
     el.id = id;
-    // コンテンツエリア: YouTube埋め込み or 画像プレースホルダー
-    const mediaHTML = w.embed_url
+    // コンテンツエリア: YouTube埋め込み → 画像 → プレースホルダーの優先順
+    const isYouTubeEmbed = embedUrl && (embedUrl.includes('youtube.com/embed') || embedUrl.includes('youtu.be'));
+    const isImageUrl = (url) => url && (
+      url.match(/\.(jpg|jpeg|png|gif|webp|svg|png)(\?|$)/i) ||
+      url.includes('raw.githubusercontent.com') ||
+      url.includes('drive.google.com/uc') ||
+      url.includes('googleusercontent.com') ||
+      url.includes('imgur.com') ||
+      url.includes('cloudinary.com')
+    );
+
+    const mediaHTML = isYouTubeEmbed
       ? `<div style="position:relative;width:100%;padding-top:56.25%;background:#000;">
-           <iframe src="${w.embed_url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+           <iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
          </div>`
-      : `<div class="img-ph">Image</div>`;
+      : isImageUrl(imgUrl)
+        ? `<img src="${imgUrl}" style="display:block;width:100%;height:auto;" alt="${w.title||''}">`
+        : isImageUrl(embedUrl)
+          ? `<img src="${embedUrl}" style="display:block;width:100%;height:auto;" alt="${w.title||''}">`
+          : `<div class="img-ph">Image</div>`;
 
     // リンクボタン: Spotifyはロゴ付き、それ以外は「Open →」
     let linkHTML = '';
-    if(w.url){
-      const isSpotify = w.url.includes('spotify.com');
-      const isYouTube = w.url.includes('youtube.com') || w.url.includes('youtu.be');
+    if(imgUrl){
+      const isSpotify = imgUrl.includes('spotify.com');
+      const isYouTube = imgUrl.includes('youtube.com') || imgUrl.includes('youtu.be');
       if(isSpotify){
-        linkHTML = `<a href="${w.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">
+        linkHTML = `<a href="${imgUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
           Spotify
         </a>`;
-      } else if(isYouTube && !w.embed_url){
-        linkHTML = `<a href="${w.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">YouTube →</a>`;
-      } else if(!w.embed_url){
-        linkHTML = `<a href="${w.url}" target="_blank" style="font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;display:inline-block;margin-top:8px;">Open →</a>`;
+      } else if(isYouTube && !embedUrl){
+        linkHTML = `<a href="${imgUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--en);font-size:8px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;margin-top:8px;">YouTube →</a>`;
+      } else if(!isImageUrl(imgUrl)){
+        linkHTML = `<a href="${imgUrl}" target="_blank" style="font-family:var(--en);font-size:8px;letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--ink);padding:4px 12px;color:var(--ink);text-decoration:none;display:inline-block;margin-top:8px;">Open →</a>`;
       }
     }
 
@@ -461,7 +475,16 @@ function buildWorkWins(works){
       </div>`;
     container.appendChild(el);
 
-    const baseZ = 200 - i;
+    // raw.githubusercontent.com のURLをそのまま使う（最も確実）
+    const normalizeUrl = (url) => {
+      if(!url) return url;
+      // GitHub blob URLをraw URLに変換
+      if(url.includes('github.com') && url.includes('/blob/'))
+        return url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/' );
+      return url;
+    };
+    const imgUrl = normalizeUrl(w.url);
+    const embedUrl = normalizeUrl(w.embed_url);
     el.style.zIndex = baseZ;
 
     // 2列で交互に、少しずつ下にずらして重ねる
