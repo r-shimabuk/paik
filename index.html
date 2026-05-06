@@ -789,9 +789,11 @@ function togglePlay(btn,fillId){
   const indicator = document.getElementById('ptr-indicator');
 
   document.addEventListener('touchstart', e=>{
-    // 一番上にいるときだけ有効
-    if(window.scrollY === 0){
-      startY = e.touches[0].clientY;
+    // 画面上部30%かつ最上部にいるときだけ有効
+    const touchY = e.touches[0].clientY;
+    const threshold = window.innerHeight * 0.30;
+    if(window.scrollY === 0 && touchY < threshold){
+      startY = touchY;
       pulling = true;
     }
   }, {passive:true});
