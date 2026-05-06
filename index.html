@@ -554,14 +554,14 @@ function buildWorkWins(works){
     const baseZ = 100 + i;
     el.style.zIndex=baseZ;
 
-    const isLeft=i%2===0;
-    const jx=(Math.random()-.5)*Math.round(vw*0.04);
-    const jy=(Math.random()-.5)*Math.round((vh-HH-FH)*0.04);
-    const x=(isLeft?col0:col1)+jx;
-    const y=Math.round(HH+(vh-HH-FH)*0.10+Math.floor(i/2)*Math.round((vh-HH-FH)*0.06))+jy;
-
     const initScale=initScales[Math.floor(Math.random()*initScales.length)];
     const ww=Math.round(wwBase*initScale);
+
+    // 画面全体にランダム配置（列なし）
+    const jx=Math.random()*(vw*0.85);
+    const jy=Math.random()*((vh-HH-FH)*0.85);
+    const x=Math.round(jx);
+    const y=Math.round(HH+jy);
 
     placeWin(id,x,y,ww,0);
     el.style.zIndex=baseZ;
