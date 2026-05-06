@@ -294,7 +294,7 @@ body{
 </div>
 
 <header class="site-header">
-  <span class="header-title" onclick="openAbout()">シマブク / <span>PAIK</span></span>
+  <span class="header-title" onclick="openAbout()">シマブク（パピー）</span>
   <nav class="header-nav">
     <a onclick="openAbout()">About</a>
     <a onclick="revealWorks()">Works</a>
@@ -315,7 +315,7 @@ body{
 <div id="works-container"></div>
 
 <footer class="site-footer">
-  <span class="footer-copy" id="footer-copy">© 2025 Shimabuku / PAIK</span>
+  <span class="footer-copy" id="footer-copy">© 2025 shimabuk(puppy)</span>
   <button class="footer-shuffle" onclick="doShuffle()">↯ Shuffle</button>
 </footer>
 
@@ -625,7 +625,7 @@ async function loadAbout(){
   const d=data?.[0]||{};
   const tags=(d.tags||'DTP / Music / Podcast / Tokyo').split('/').map(t=>t.trim()).filter(Boolean);
   document.getElementById('about-body').innerHTML=`
-    <div class="about-name">${d.name||'SHIMABUKU'}</div>
+    <div class="about-name">${d.name||'shimabuk(puppy)'}</div>
     <div class="about-sub">${d.name_jp||'シマブク（パピー）'}</div>
     <div class="about-handle">${d.handle||'@r_shimabuk'}</div>
     <div class="about-bio">${(d.bio||'ここに自己紹介が入ります。').replace(/\\n/g,'<br>')}</div>
