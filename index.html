@@ -109,7 +109,6 @@ body{
 
 @media(max-width:600px){
   .footer-shuffle{display:none;}
-  /* 独立した丸ボタン */
   #shuffle-fab{
     position:fixed;
     bottom:calc(var(--fh) * -0.3);
@@ -118,22 +117,26 @@ body{
     height:90px;
     border-radius:50%;
     background:var(--accent);
-    border:3px solid #fff;
+    border:none;
     cursor:pointer;
     z-index:9100;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:4px;
+    gap:0;
     box-shadow:none;
   }
   #shuffle-fab:active{background:var(--blue);}
-  #shuffle-fab .fab-icon{font-size:22px;color:#fff;line-height:1;}
-  #shuffle-fab .fab-label{
-    font-family:var(--en);font-size:8px;font-weight:300;
-    letter-spacing:.15em;text-transform:uppercase;color:#fff;line-height:1;
+  #shuffle-fab .fab-icon{
+    font-size:52px;
+    line-height:1;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
+  #shuffle-fab .fab-label{display:none;}
 }
 
 /* ── WINDOW ── */
@@ -277,12 +280,12 @@ body{
 
 <footer class="site-footer">
   <span class="footer-copy" id="footer-copy">© 2025 Shimabuku / PAIK</span>
-  <button class="footer-shuffle" onclick="doShuffle()">SHUFFLE ↯</button>
+  <button class="footer-shuffle" onclick="doShuffle()">⟳ SHUFFLE</button>
 </footer>
 
 <!-- スマホ用 丸SHUFFLEボタン -->
 <button id="shuffle-fab" onclick="doShuffle()">
-  <span class="fab-icon">↯</span>
+  <span class="fab-icon">⟳</span>
   <span class="fab-label">Shuffle</span>
 </button>
 
