@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>シマブク（パピー）</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Barlow+Condensed:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -87,11 +88,10 @@ body{
   border:.5px solid var(--accent);
   z-index:10;
   cursor:grab;
-  box-shadow:3px 3px 0px 0px var(--blue);
 }
 .win:active{cursor:grabbing;}
 .win.closed{display:none;}
-.win.blue-win{border-color:var(--blue);box-shadow:3px 3px 0px 0px var(--accent);}
+.win.blue-win{border-color:var(--blue);}
 .win.blue-win .win-bar{background:var(--blue);border-bottom-color:var(--blue);}
 .win.blue-win .win-accent{background:var(--blue);}
 .win.blue-win .win-close{border-color:#fff;color:#fff;background:transparent;}
