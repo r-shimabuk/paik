@@ -349,6 +349,8 @@ function cy(y,h){
 }
 
 function bringTop(id){
+  // すでに最前面なら何もしない
+  if(getTopWinId()===id) return;
   const el=document.getElementById(id);
   if(el){zTop++;el.style.zIndex=zTop;}
 }
@@ -510,11 +512,7 @@ function buildWorkWins(works){
     } else {
       const imgSrc=isImg(imgUrl)?imgUrl:isImg(linkUrl)?linkUrl:'';
       if(imgSrc){
-        // 最前面のウィンドウのみリンク遷移、それ以外は前に持ってくるだけ
-        const clickHandler=linkUrl&&!isImg(linkUrl)
-          ? `onclick="handleImgClick(event,'${id}','${linkUrl}')"`
-          : '';
-        mediaHTML=`<img src="${imgSrc}" ${clickHandler} style="display:block;width:100%;height:auto;cursor:pointer;" alt="${w.title||''}">`;
+        mediaHTML=`<img src="${imgSrc}" style="display:block;width:100%;height:auto;" alt="${w.title||''}">`;
       } else {
         mediaHTML=`<div class="img-ph">Image</div>`;
       }
