@@ -128,14 +128,6 @@ body{
     box-shadow:none;
   }
   #shuffle-fab:active{background:var(--blue);}
-  #shuffle-fab::after{
-    content:'';
-    position:absolute;
-    inset:4px;
-    border-radius:50%;
-    border:1.5px solid rgba(255,255,255,.6);
-    pointer-events:none;
-  }
   #shuffle-fab-inner{
     display:flex;
     flex-direction:column;
@@ -149,7 +141,7 @@ body{
     font-size:32px;
     color:#fff;
     line-height:1;
-    font-weight:700;
+    font-weight:300;
   }
   #shuffle-fab-inner .fab-word{
     display:block;
