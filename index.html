@@ -13,7 +13,7 @@
   --bg:#F6F7F8;--win:#EDEDEC;
   --ink:#1A1A1A;--muted:#888;--dim:rgba(26,26,26,.11);
   --accent:#FF4C00;
-  --blue:#1ED760;
+  --blue:#0000CC;
   --green:#1ED760;
   --en:'Barlow Condensed','Arial Narrow',sans-serif;
   --jp:'Noto Sans JP',sans-serif;
@@ -257,7 +257,7 @@ body{
 /* work card */
 .img-ph{width:100%;aspect-ratio:3/2;background:#D8D8D8;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
 .work-cat{font-family:var(--en);font-size:7px;font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:2px;margin-top:6px;}
-.work-title{font-family:var(--jp);font-size:11px;font-weight:300;line-height:1.3;margin-bottom:3px;color:#0000CC;}
+.work-title{font-family:var(--jp);font-size:11px;font-weight:300;line-height:1.3;margin-bottom:3px;color:var(--blue);}
 .work-date{font-family:var(--en);font-size:7px;color:var(--green);margin-bottom:6px;}
 
 /* スマホ用スタイル */
@@ -294,7 +294,7 @@ body{
 </div>
 
 <header class="site-header">
-  <span class="header-title" onclick="openAbout()">シマブク（パピー）</span>
+  <span class="header-title" onclick="openAbout()">シマブク / <span>PAIK</span></span>
   <nav class="header-nav">
     <a onclick="openAbout()">About</a>
     <a onclick="revealWorks()">Works</a>
@@ -315,7 +315,7 @@ body{
 <div id="works-container"></div>
 
 <footer class="site-footer">
-  <span class="footer-copy" id="footer-copy">© 2025 shimabuk(puppy)</span>
+  <span class="footer-copy" id="footer-copy">© 2025 Shimabuku / PAIK</span>
   <button class="footer-shuffle" onclick="doShuffle()">↯ Shuffle</button>
 </footer>
 
@@ -625,7 +625,7 @@ async function loadAbout(){
   const d=data?.[0]||{};
   const tags=(d.tags||'DTP / Music / Podcast / Tokyo').split('/').map(t=>t.trim()).filter(Boolean);
   document.getElementById('about-body').innerHTML=`
-    <div class="about-name">${d.name||'shimabuk(puppy)'}</div>
+    <div class="about-name">${d.name||'SHIMABUKU'}</div>
     <div class="about-sub">${d.name_jp||'シマブク（パピー）'}</div>
     <div class="about-handle">${d.handle||'@r_shimabuk'}</div>
     <div class="about-bio">${(d.bio||'ここに自己紹介が入ります。').replace(/\\n/g,'<br>')}</div>
