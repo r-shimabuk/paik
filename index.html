@@ -383,7 +383,7 @@ function doShuffle(){
     // サイズ: スマホは0.6×/0.8×/1×、PCは1×/0.5×/0.3×
     const isMob=window.innerWidth<=600;
     const bw=baseWidths[id]||Math.round(vw*0.5);
-    const scales=isMob?[0.6,0.8,1]:[1,0.5,0.3];
+    const scales=isMob?[0.8,1,1.4]:[1,0.5,0.3];
     const scale=scales[Math.floor(Math.random()*scales.length)];
     const newW=Math.round(Math.min(bw*scale, vw*0.92));
     el.style.width=newW+'px';
@@ -419,7 +419,7 @@ function buildWorkWins(works){
   const wwBase=Math.round(vw*0.50);
   // スマホ(600px以下)とPCでサイズパターンを変える（案B）
   const isMobile=vw<=600;
-  const initScales=isMobile?[0.6,0.8,1]:[0.3,0.5,1];
+  const initScales=isMobile?[0.8,1,1.4]:[0.3,0.5,1];
   const col0=Math.round(vw*0.03), col1=Math.round(vw*0.40);
 
   works.forEach((w,i)=>{
