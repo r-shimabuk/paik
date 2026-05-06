@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light only">
 <title>シマブク（パピー）</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -52,6 +52,24 @@ body{
   transform-origin:left center;
   line-height:1;
 }
+/* PULL TO REFRESH */
+#ptr-indicator{
+  position:fixed;
+  top:calc(var(--hh) + 22px);
+  left:50%;
+  transform:translateX(-50%) translateY(-60px);
+  background:var(--accent);
+  color:#fff;
+  width:40px;height:40px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  z-index:8998;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s;
+}
+
 #loading-screen{
   position:fixed;inset:0;z-index:99999;
   background:var(--accent);
@@ -266,6 +284,8 @@ body{
 <div class="ticker-wrap" id="ticker-wrap">
   <div class="ticker-inner" id="ticker-inner"></div>
 </div>
+<div id="ptr-indicator">↯</div>
+
 <div id="loading-screen">
   <video id="loading-video" autoplay muted playsinline loop>
     <source src="paik-08_1.mp4" type="video/mp4">
@@ -763,6 +783,48 @@ function togglePlay(btn,fillId){
     timers[fillId]=setInterval(()=>{w=(w+.05)%100;fill.style.width=w+'%';},80);
   }
 }
+
+// ── PULL TO REFRESH ──
+(()=>{
+  const PTR_THRESHOLD = 80; // 引っ張る距離(px)
+  let startY = 0, pulling = false;
+  const indicator = document.getElementById('ptr-indicator');
+
+  document.addEventListener('touchstart', e=>{
+    // 一番上にいるときだけ有効
+    if(window.scrollY === 0){
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e=>{
+    if(!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if(dist > 0 && dist < PTR_THRESHOLD * 1.5){
+      const ratio = Math.min(dist / PTR_THRESHOLD, 1);
+      indicator.style.opacity = ratio;
+      indicator.style.transform = `translateX(-50%) translateY(${-60 + dist * 0.6}px) rotate(${dist * 2}deg)`;
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchend', e=>{
+    if(!pulling) return;
+    const dist = e.changedTouches[0].clientY - startY;
+    if(dist >= PTR_THRESHOLD){
+      // しきい値超えたらリロード
+      indicator.style.opacity = '1';
+      indicator.style.transform = 'translateX(-50%) translateY(10px) rotate(720deg)';
+      indicator.style.transition = 'transform .4s ease, opacity .4s ease';
+      setTimeout(()=> location.reload(), 400);
+    } else {
+      // 戻す
+      indicator.style.opacity = '0';
+      indicator.style.transform = 'translateX(-50%) translateY(-60px)';
+    }
+    pulling = false;
+  }, {passive:true});
+})();
 
 // ── INIT ──
 window.addEventListener('resize',()=>layoutAll());
