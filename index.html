@@ -95,8 +95,7 @@ body{
 .site-footer{
   position:fixed;bottom:0;left:0;right:0;height:var(--fh);
   background:var(--accent);z-index:9000;
-  display:flex;align-items:center;padding:0 0 0 24px;justify-content:space-between;
-  overflow:visible;
+  display:flex;align-items:center;padding:0 24px;justify-content:space-between;
 }
 .footer-copy{font-family:var(--en);font-size:9px;font-weight:300;letter-spacing:.15em;color:rgba(255,255,255,.75);text-transform:uppercase;}
 .footer-shuffle{
@@ -106,25 +105,35 @@ body{
 }
 .footer-shuffle:hover{background:rgba(255,255,255,.15);}
 
-/* スマホ: 右側に丸ボタン */
+#shuffle-fab{display:none;}
+
 @media(max-width:600px){
-  .site-footer{padding:0 0 0 16px;}
-  .footer-shuffle{
-    width:calc(var(--fh) * 1.4);
-    height:calc(var(--fh) * 1.4);
+  .footer-shuffle{display:none;}
+  /* 独立した丸ボタン */
+  #shuffle-fab{
+    position:fixed;
+    bottom:calc(var(--fh) - 20px);
+    right:12px;
+    width:90px;
+    height:90px;
     border-radius:50%;
-    border:.5px solid rgba(255,255,255,.6);
     background:var(--accent);
-    margin-right:calc(var(--fh) * -0.2);
-    margin-bottom:calc(var(--fh) * -0.2);
-    display:flex;align-items:center;justify-content:center;
-    padding:0;
-    font-size:8px;
-    letter-spacing:.1em;
-    box-shadow:0 2px 8px rgba(0,0,0,.2);
-    align-self:flex-end;
+    border:none;
+    cursor:pointer;
+    z-index:9100;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
   }
-  .footer-shuffle:hover{background:var(--blue);}
+  #shuffle-fab:active{background:var(--blue);}
+  #shuffle-fab .fab-icon{font-size:22px;color:#fff;line-height:1;}
+  #shuffle-fab .fab-label{
+    font-family:var(--en);font-size:8px;font-weight:300;
+    letter-spacing:.15em;text-transform:uppercase;color:#fff;line-height:1;
+  }
 }
 
 /* ── WINDOW ── */
@@ -270,6 +279,12 @@ body{
   <span class="footer-copy" id="footer-copy">© 2025 Shimabuku / PAIK</span>
   <button class="footer-shuffle" onclick="doShuffle()">SHUFFLE ↯</button>
 </footer>
+
+<!-- スマホ用 丸SHUFFLEボタン -->
+<button id="shuffle-fab" onclick="doShuffle()">
+  <span class="fab-icon">↯</span>
+  <span class="fab-label">Shuffle</span>
+</button>
 
 <script>
 const SHEETS = {
@@ -689,7 +704,7 @@ async function loadWorks(){
         s.style.transform=`translateX(${vw + i*interval}px) translateY(-50%)`;
       });
 
-      const speed=1.3;
+      const speed=0.8;
       const positions=spans.map((_,i)=>vw+i*interval);
 
       function tickerStep(){
