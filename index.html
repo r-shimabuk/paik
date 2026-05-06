@@ -36,25 +36,21 @@ body{
   background:#000;
   z-index:8999;
   overflow:hidden;
-  display:flex;align-items:center;
+  display:none;
+  align-items:center;
 }
-.ticker-track{
-  display:flex;
+.ticker-inner{
+  position:absolute;
   white-space:nowrap;
-  animation:ticker-scroll 20s linear infinite;
-}
-.ticker-text{
   font-family:var(--en);
   font-size:9px;
   font-weight:300;
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#fff;
-  padding-right:80px;
-}
-@keyframes ticker-scroll{
-  0%{transform:translateX(0);}
-  100%{transform:translateX(-50%);}
+  top:50%;
+  transform-origin:left center;
+  line-height:1;
 }
 #loading-screen{
   position:fixed;inset:0;z-index:99999;
@@ -216,11 +212,8 @@ body{
 </head>
 <body>
 
-<div class="ticker-wrap" id="ticker-wrap" style="display:none;">
-  <div class="ticker-track" id="ticker-track">
-    <span class="ticker-text" id="ticker-text-1"></span>
-    <span class="ticker-text" id="ticker-text-2"></span>
-  </div>
+<div class="ticker-wrap" id="ticker-wrap">
+  <div class="ticker-inner" id="ticker-inner"></div>
 </div>
 <div id="loading-screen">
   <video id="loading-video" autoplay muted playsinline loop>
@@ -638,14 +631,57 @@ async function loadWorks(){
   ];
   buildWorkWins(works);
 
-  // ティッカー: 最新1件（最後の行）を表示
+  // ティッカー: 最新1件を複数並べて流す
   if(works.length>0){
     const latest=works[works.length-1];
-    const msg=`${latest.title||'新しい投稿'} を投稿しました！`;
-    // 2つ並べてシームレスにループ
-    document.getElementById('ticker-text-1').textContent=msg+'　　';
-    document.getElementById('ticker-text-2').textContent=msg+'　　';
-    document.getElementById('ticker-wrap').style.display='flex';
+    const cat=latest.category||'';
+    const title=latest.title||'新しい投稿';
+    const msg=cat ? `${cat}「${title}」を更新しました！` : `「${title}」を更新しました！`;
+    const el=document.getElementById('ticker-inner');
+    el.textContent=msg;
+    const wrap=document.getElementById('ticker-wrap');
+    wrap.style.display='flex';
+
+    // テキスト幅確定後にJS開始
+    requestAnimationFrame(()=>{
+      const tw=el.offsetWidth;
+      const gap=200; // テキスト間の間隔(px)
+      const interval=tw+gap; // 1サイクルの幅
+
+      // テキストを複数並べる（画面幅 + 余裕分）
+      const vw=window.innerWidth;
+      const count=Math.ceil((vw+interval*2)/interval)+1;
+      el.textContent='';
+      const spans=[];
+      for(let i=0;i<count;i++){
+        const s=document.createElement('span');
+        s.textContent=msg;
+        s.style.cssText=`position:absolute;white-space:nowrap;top:50%;transform-origin:left center;`;
+        el.appendChild(s);
+        spans.push(s);
+      }
+
+      // 初期位置: 右端から順番に並べる
+      spans.forEach((s,i)=>{
+        s.style.transform=`translateX(${vw + i*interval}px) translateY(-50%)`;
+      });
+
+      const speed=1.3;
+      const positions=spans.map((_,i)=>vw+i*interval);
+
+      function tickerStep(){
+        positions.forEach((x,i)=>{
+          positions[i]=x-speed;
+          // 画面左端+テキスト幅を超えたら右端に回す
+          if(positions[i]<-(tw+gap)){
+            positions[i]=positions[i]+count*interval;
+          }
+        spans[i].style.transform=`translateX(${positions[i]}px) translateY(-50%)`;
+        });
+        requestAnimationFrame(tickerStep);
+      }
+      requestAnimationFrame(tickerStep);
+    });
   }
 }
 
