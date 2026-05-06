@@ -52,7 +52,61 @@ body{
   transform-origin:left center;
   line-height:1;
 }
-/* PULL TO REFRESH */
+/* WORKS LIST MODAL */
+#works-modal{
+  position:fixed;inset:0;z-index:9600;
+  background:var(--accent);
+  display:none;flex-direction:column;
+  overflow:hidden;
+}
+#works-modal.open{display:flex;}
+#works-modal-bar{
+  padding:0 24px;
+  height:var(--hh);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  border-bottom:.5px solid rgba(255,255,255,.3);
+}
+#works-modal-title{
+  font-family:var(--en);font-size:10px;font-weight:300;
+  letter-spacing:.25em;text-transform:uppercase;color:#fff;
+}
+#works-modal-close{
+  font-family:var(--en);font-size:14px;color:#fff;
+  background:none;border:none;cursor:pointer;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+}
+#works-modal-body{
+  flex:1;overflow-y:auto;
+  padding:24px 24px 40px;
+}
+.works-year-group{margin-bottom:32px;}
+.works-year-label{
+  font-family:var(--en);font-size:11px;font-weight:300;
+  letter-spacing:.2em;color:rgba(255,255,255,.5);
+  margin-bottom:8px;border-bottom:.5px solid rgba(255,255,255,.2);
+  padding-bottom:4px;
+}
+.works-list-item{
+  display:flex;align-items:baseline;gap:12px;
+  padding:10px 0;
+  border-bottom:.5px solid rgba(255,255,255,.15);
+  cursor:pointer;
+  text-decoration:none;
+}
+.works-list-item:last-child{border-bottom:none;}
+.works-list-item:hover .works-list-title{opacity:.6;}
+.works-list-cat{
+  font-family:var(--en);font-size:8px;font-weight:300;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);
+  min-width:80px;flex-shrink:0;
+}
+.works-list-title{
+  font-family:var(--jp);font-size:16px;font-weight:300;
+  color:#fff;flex:1;line-height:1.4;
+  transition:opacity .15s;
+}
 #ptr-indicator{
   position:fixed;
   top:calc(var(--hh) + 22px);
@@ -297,7 +351,7 @@ body{
   <span class="header-title" onclick="openAbout()">シマブク（パピー）</span>
   <nav class="header-nav">
     <a onclick="openAbout()">About</a>
-    <a onclick="revealWorks()">Works</a>
+    <a onclick="openWorksList()">Works</a>
     <a id="contact-link" href="https://instagram.com/" target="_blank">Contact</a>
   </nav>
 </header>
@@ -312,6 +366,15 @@ body{
 </div>
 
 <!-- WORKS -->
+<!-- WORKS LIST MODAL -->
+<div id="works-modal">
+  <div id="works-modal-bar">
+    <span id="works-modal-title">Works</span>
+    <button id="works-modal-close" onclick="closeWorksList()">×</button>
+  </div>
+  <div id="works-modal-body"></div>
+</div>
+
 <div id="works-container"></div>
 
 <footer class="site-footer">
@@ -590,6 +653,44 @@ function handleImgClick(e, id, url){
   }
 }
 
+// ── WORKS LIST MODAL ──
+function openWorksList(){
+  const modal=document.getElementById('works-modal');
+  const body=document.getElementById('works-modal-body');
+  modal.classList.add('open');
+
+  if(!window._allWorks||window._allWorks.length===0){
+    body.innerHTML='<div style="color:rgba(255,255,255,.5);font-family:var(--en);font-size:9px;letter-spacing:.15em;padding:20px 0;">Loading...</div>';
+    return;
+  }
+
+  // 年代別にグループ化
+  const groups={};
+  window._allWorks.forEach(w=>{
+    const year=w.date||'—';
+    if(!groups[year]) groups[year]=[];
+    groups[year].push(w);
+  });
+
+  // 年代を降順にソート
+  const sortedYears=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+
+  body.innerHTML=sortedYears.map(year=>`
+    <div class="works-year-group">
+      <div class="works-year-label">${year}</div>
+      ${groups[year].map(w=>`
+        <a class="works-list-item" ${w.url?`href="${w.url}" target="_blank"`:''}
+           onclick="closeWorksList()">
+          <span class="works-list-cat">${w.category||''}</span>
+          <span class="works-list-title">${w.title||''}</span>
+        </a>`).join('')}
+    </div>`).join('');
+}
+
+function closeWorksList(){
+  document.getElementById('works-modal').classList.remove('open');
+}
+
 function revealWorks(){
   const el=document.getElementById('w-work-0');
   if(el) bringTop('w-work-0');
@@ -710,6 +811,7 @@ async function loadWorks(){
     {category:'YouTube',title:'Sample',url:'',embed_url:'',date:'2025'},
   ];
   buildWorkWins(works);
+  window._allWorks = works; // Works一覧モーダル用に保存
 
   // ティッカー: 最新1件を複数並べて流す
   if(works.length>0){
