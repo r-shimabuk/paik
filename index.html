@@ -112,13 +112,13 @@ body{
   /* 独立した丸ボタン */
   #shuffle-fab{
     position:fixed;
-    bottom:calc(var(--fh) - 20px);
+    bottom:calc(var(--fh) * -0.3);
     right:12px;
     width:90px;
     height:90px;
     border-radius:50%;
     background:var(--accent);
-    border:none;
+    border:3px solid #fff;
     cursor:pointer;
     z-index:9100;
     display:flex;
@@ -126,7 +126,7 @@ body{
     align-items:center;
     justify-content:center;
     gap:4px;
-    box-shadow:0 4px 12px rgba(0,0,0,.25);
+    box-shadow:none;
   }
   #shuffle-fab:active{background:var(--blue);}
   #shuffle-fab .fab-icon{font-size:22px;color:#fff;line-height:1;}
