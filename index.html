@@ -324,7 +324,9 @@ function buildWorkWins(works){
   const container=document.getElementById('works-container');
   container.innerHTML='';
   const vw=window.innerWidth, vh=window.innerHeight, avail=vh-HH-FH;
-  const ww=Math.round(vw*0.50);
+  const wwBase=Math.round(vw*0.50);
+  // 初期表示もランダムサイズ（0.3× / 0.5× / 1×）
+  const initScales=[0.3, 0.5, 1];
   const col0=Math.round(vw*0.03), col1=Math.round(vw*0.40);
 
   works.forEach((w,i)=>{
@@ -422,6 +424,9 @@ function buildWorkWins(works){
     const jy=(Math.random()-.5)*Math.round((vh-HH-FH)*0.04);
     const x=(isLeft?col0:col1)+jx;
     const y=Math.round(HH+(vh-HH-FH)*0.10+Math.floor(i/2)*Math.round((vh-HH-FH)*0.06))+jy;
+
+    const initScale=initScales[Math.floor(Math.random()*initScales.length)];
+    const ww=Math.round(wwBase*initScale);
 
     placeWin(id,x,y,ww,0);
     el.style.zIndex=baseZ;
