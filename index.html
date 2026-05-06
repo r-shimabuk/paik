@@ -17,7 +17,7 @@
   --green:#1ED760;
   --en:'Barlow Condensed','Arial Narrow',sans-serif;
   --jp:'Noto Sans JP',sans-serif;
-  --hh:44px;--fh:44px;
+  --hh:44px;--fh:44px;--th:22px; /* th = ticker height */
 }
 html,body{width:100%;height:100%;overflow:hidden;background:#F6F7F8 !important;}
 body{
@@ -28,7 +28,34 @@ body{
   color-scheme:light;
 }
 
-/* ── LOADING SCREEN ── */
+/* TICKER */
+.ticker-wrap{
+  position:fixed;
+  top:var(--hh);left:0;right:0;
+  height:22px;
+  background:#000;
+  z-index:8999;
+  overflow:hidden;
+  display:flex;align-items:center;
+}
+.ticker-track{
+  display:flex;
+  white-space:nowrap;
+  animation:ticker-scroll 20s linear infinite;
+}
+.ticker-text{
+  font-family:var(--en);
+  font-size:9px;
+  font-weight:300;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#fff;
+  padding-right:80px;
+}
+@keyframes ticker-scroll{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-50%);}
+}
 #loading-screen{
   position:fixed;inset:0;z-index:99999;
   background:var(--accent);
@@ -189,7 +216,12 @@ body{
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
+<div class="ticker-wrap" id="ticker-wrap" style="display:none;">
+  <div class="ticker-track" id="ticker-track">
+    <span class="ticker-text" id="ticker-text-1"></span>
+    <span class="ticker-text" id="ticker-text-2"></span>
+  </div>
+</div>
 <div id="loading-screen">
   <video id="loading-video" autoplay muted playsinline loop>
     <source src="paik-08_1.mp4" type="video/mp4">
@@ -239,7 +271,10 @@ let allIds=[];
 const baseWidths={};
 
 function cx(x,w){return Math.max(0,Math.min(x,window.innerWidth-(w||0)-2));}
-function cy(y,h){return Math.max(HH,Math.min(y,window.innerHeight-FH-32));}
+function cy(y,h){
+  const tickerH=document.getElementById('ticker-wrap')?.style.display!=='none'?22:0;
+  return Math.max(HH+tickerH,Math.min(y,window.innerHeight-FH-32));
+}
 
 function bringTop(id){
   const el=document.getElementById(id);
@@ -602,6 +637,16 @@ async function loadWorks(){
     {category:'YouTube',title:'Sample',url:'',embed_url:'',date:'2025'},
   ];
   buildWorkWins(works);
+
+  // ティッカー: 最新1件（最後の行）を表示
+  if(works.length>0){
+    const latest=works[works.length-1];
+    const msg=`${latest.title||'新しい投稿'} を投稿しました！`;
+    // 2つ並べてシームレスにループ
+    document.getElementById('ticker-text-1').textContent=msg+'　　';
+    document.getElementById('ticker-text-2').textContent=msg+'　　';
+    document.getElementById('ticker-wrap').style.display='flex';
+  }
 }
 
 // ── PLAY/PAUSE ──
