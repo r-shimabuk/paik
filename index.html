@@ -372,7 +372,7 @@ body{
 <div id="ptr-indicator">↯</div>
 
 <div id="loading-screen">
-  <video id="loading-video" autoplay muted playsinline loop>
+  <video id="loading-video" autoplay muted playsinline loop preload="auto">
     <source src="heart.mp4" type="video/mp4">
   </video>
   <div id="loading-text">Loading...</div>
@@ -966,6 +966,14 @@ function togglePlay(btn,fillId){
 window.addEventListener('resize',()=>layoutAll());
 
 window.addEventListener('load', async ()=>{
+  // ローディング動画を強制再生
+  const video = document.getElementById('loading-video');
+  if(video){
+    video.muted = true;
+    video.playsInline = true;
+    try{ await video.play(); }catch(e){ console.warn('video autoplay blocked:', e); }
+  }
+
   layoutAll();
 
   // ローディングは最大2秒で必ず消す（データ取得と切り離す）
