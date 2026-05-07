@@ -434,7 +434,7 @@ const SHEETS = {
 };
 
 const HH=44, FH=44;
-let zTop=100;
+let zTop=500;
 let allIds=[];
 // 各ウィンドウの基準幅を記録（shuffle用）
 const baseWidths={};
@@ -648,7 +648,7 @@ function buildWorkWins(works){
     container.appendChild(el);
 
     // 新しい順（行番号が大きい=後に追加）が最上位
-    const baseZ = 100 + i;
+    const baseZ = 200 + i;
     el.style.zIndex=baseZ;
 
     const initScale=initScales[Math.floor(Math.random()*initScales.length)];
