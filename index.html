@@ -272,8 +272,6 @@ body{
 .win.blue-win{border-color:var(--blue);}
 .win.blue-win .win-bar{background:var(--blue);border-bottom-color:var(--blue);}
 .win.blue-win .win-accent{background:var(--blue);}
-.win.blue-win .win-close{border-color:#fff;color:#fff;background:transparent;}
-.win.blue-win .win-close:hover{background:rgba(255,255,255,.25);}
 .win.blue-win .work-cat{color:var(--blue);}
 .win.blue-win .row{border-bottom-color:var(--blue);}
 .win.blue-win .row.on .row-t{border-bottom-color:var(--blue);}
@@ -291,14 +289,15 @@ body{
 .win-bar:active{cursor:grabbing;}
 .win-label{font-family:var(--en);font-size:8px;font-weight:300;letter-spacing:.22em;color:#fff;text-transform:uppercase;pointer-events:none;}
 .win-close{
-  /* タイトルバーと同じ高さ・同じ色の枠線 */
   width:14px;height:14px;
   border:.5px solid #fff;
-  background:transparent;
-  cursor:pointer;font-size:8px;color:#fff;
+  background:#fff;
+  cursor:pointer;font-size:8px;color:var(--accent);
   display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;
 }
-.win-close:hover{background:rgba(255,255,255,.25);}
+.win-close:hover{background:rgba(255,255,255,.7);}
+.win.blue-win .win-close{border-color:#fff;background:#fff;color:var(--blue);}
+.win.blue-win .win-close:hover{background:rgba(255,255,255,.7);}
 .win-body{padding:3px 4px;}
 
 /* ABOUT MODAL */
@@ -958,6 +957,51 @@ function togglePlay(btn,fillId){
     }
     pulling = false;
   }, {passive:true});
+})();
+
+// ── SHAKE TO SHUFFLE ──
+(()=>{
+  let lastX=0, lastY=0, lastZ=0;
+  let lastShake=0;
+  const THRESHOLD=25; // 振る強さの閾値
+  const COOLDOWN=1500; // 連続発動防止(ms)
+
+  function requestMotionPermission(){
+    if(typeof DeviceMotionEvent === 'undefined') return;
+    // iOS 13+ は許可が必要
+    if(typeof DeviceMotionEvent.requestPermission === 'function'){
+      // ユーザー操作をきっかけに許可ダイアログを出す
+      document.addEventListener('touchend', function askPermission(){
+        DeviceMotionEvent.requestPermission().then(state=>{
+          if(state==='granted') startMotion();
+        }).catch(()=>{});
+        document.removeEventListener('touchend', askPermission);
+      }, {once:false, passive:true});
+    } else {
+      startMotion();
+    }
+  }
+
+  function startMotion(){
+    window.addEventListener('devicemotion', e=>{
+      const acc = e.accelerationIncludingGravity;
+      if(!acc) return;
+      const dx = Math.abs(acc.x - lastX);
+      const dy = Math.abs(acc.y - lastY);
+      const dz = Math.abs(acc.z - lastZ);
+      lastX=acc.x; lastY=acc.y; lastZ=acc.z;
+
+      if(dx+dy+dz > THRESHOLD){
+        const now = Date.now();
+        if(now - lastShake > COOLDOWN){
+          lastShake = now;
+          doShuffle();
+        }
+      }
+    }, {passive:true});
+  }
+
+  requestMotionPermission();
 })();
 
 // ── INIT ──
